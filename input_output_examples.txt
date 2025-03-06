@@ -1,0 +1,59 @@
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Scanner;
+
+class CourseFullException extends Exception {
+    public CourseFullException(String message) {
+        super(message);
+    }
+}
+
+class PrerequisiteNotMetException extends Exception {
+    public PrerequisiteNotMetException(String message) {
+        super(message);
+    }
+}
+
+class University {
+    private HashMap<String, Integer> courseCapacity;
+    private HashMap<String, String> prerequisites;
+    private HashSet<String> completedCourses;
+    
+    public University() {
+        courseCapacity = new HashMap<>();
+        prerequisites = new HashMap<>();
+        completedCourses = new HashSet<>();
+        
+        courseCapacity.put("Advanced Java", 2);
+        prerequisites.put("Advanced Java", "Core Java");
+    }
+    
+    public void enrollStudent(String course) throws CourseFullException, PrerequisiteNotMetException {
+        if (prerequisites.containsKey(course) && !completedCourses.contains(prerequisites.get(course))) {
+            throw new PrerequisiteNotMetException("Error: Complete " + prerequisites.get(course) + " before enrolling in " + course + ".");
+        }
+        if (courseCapacity.getOrDefault(course, 0) == 0) {
+            throw new CourseFullException("Error: " + course + " is full.");
+        }
+        courseCapacity.put(course, courseCapacity.get(course) - 1);
+        System.out.println("Enrollment successful in " + course);
+    }
+}
+
+public class UniversityEnrollment {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        University university = new University();
+        
+        System.out.print("Enroll in Course: ");
+        String course = scanner.nextLine();
+        
+        try {
+            university.enrollStudent(course);
+        } catch (CourseFullException | PrerequisiteNotMetException e) {
+            System.out.println(e.getMessage());
+        }
+        
+        scanner.close();
+    }
+}
